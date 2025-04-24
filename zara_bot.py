@@ -37,38 +37,38 @@ async def scrape_zara():
     }
 
     for url in ZARA_URLS:
-    response = requests.get(url, headers=headers)
-    soup = BeautifulSoup(response.text, 'lxml')
+        response = requests.get(url, headers=headers)
+        soup = BeautifulSoup(response.text, 'lxml')
 
-    products = soup.find_all("div", class_="product-grid-product")
+        products = soup.find_all("div", class_="product-grid-product")
 
-    for product in products:
-        name_tag = product.find("a", class_="product-link _item")
-        if not name_tag:
-            continue
+        for product in products:
+            name_tag = product.find("a", class_="product-link _item")
+            if not name_tag:
+                continue
 
-        name = name_tag.text.strip()
-        product_url = "https://www.zara.com" + name_tag.get("href")
+            name = name_tag.text.strip()
+            product_url = "https://www.zara.com" + name_tag.get("href")
 
-        price_tag = product.find("span", class_="money-amount__main")
-        if not price_tag:
-            continue
+            price_tag = product.find("span", class_="money-amount__main")
+            if not price_tag:
+                continue
 
-        price_text = price_tag.text.replace("₹", "").replace(",", "").strip()
-        try:
-            price = int(float(price_text))
-        except:
-            continue
+            price_text = price_tag.text.replace("₹", "").replace(",", "").strip()
+            try:
+                price = int(float(price_text))
+            except:
+                continue
 
-        if name in price_cache:
-            old_price = price_cache[name]
-            drop_pct = (old_price - price) / old_price * 100
+            if name in price_cache:
+                old_price = price_cache[name]
+                drop_pct = (old_price - price) / old_price * 100
 
-            if drop_pct >= 50:
-                message = f"⚠️ Price Drop Alert\n{name}\nOld: ₹{old_price}\nNow: ₹{price}\n{product_url}"
-                await bot.send_message(chat_id=CHAT_ID, text=message)
+                if drop_pct >= 50:
+                    message = f"⚠️ Price Drop Alert\n{name}\nOld: ₹{old_price}\nNow: ₹{price}\n{product_url}"
+                    await bot.send_message(chat_id=CHAT_ID, text=message)
 
-        price_cache[name] = price
+                price_cache[name] = price
     soup = BeautifulSoup(response.text, 'lxml')
     products = soup.find_all("div", class_="product-grid-product")
 
