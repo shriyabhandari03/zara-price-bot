@@ -36,7 +36,7 @@ async def scrape_zara():
         "User-Agent": "Mozilla/5.0"
     }
 
-    response = requests.get(ZARA_URL, headers=headers)
+    response = requests.get(ZARA_URLS, headers=headers)
     soup = BeautifulSoup(response.text, 'lxml')
     products = soup.find_all("div", class_="product-grid-product")
 
